@@ -88,3 +88,21 @@ export const deletebyid = async (req,res,next)=>{
     }
     return res.status(200).json({message:"deleted....."})
 }
+
+
+
+export const getbyuserid = async (req,res,next ) =>{
+    const blid = req.params.id;
+    let usblog;
+    try{
+        usblog = Blog.findById(blid).populate("blog")
+    }
+    catch(err){
+        return console.log(err);
+    }
+
+    if(!usblog){
+        return res.status(404).json({message:"Not found"});
+    }
+    return res.status(200).json({usblog});
+}
