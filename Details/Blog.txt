@@ -1,0 +1,394 @@
+--------------------------------BLOG-----------------------------------------------------------------
+Let’s build our first route in the antiracismRoutes.js file. If you’re not already familiar with CRUD apps — have a read here and that’s what we’re going to be setting up.
+
+Create — we’ll use a POST request, adding a new object, or in this case, donation
+Read — GET, being able to read either all of the donations or a specific one for example by a donation id
+Update — PUT, being able to edit data, so if I made a mistake on the amount I could be able to get the donation id and fix it
+Delete — DELETE, you are able to you know, delete it, erase it, destroy it, kaboom.
+
+............................................................................................
+
+MERN Part I: Building RESTful APIs with Node.js and Express
+A code along I wish I had…
+This tutorial is highly referenced from Emmanuel Henri’s LinkedIn Learning tutorial released 11/5/2019.
+
+It took me a long time to find a resource to help me on my journey of building a MERN stack app and this checks a lot of boxes:
+
+M — MongoDB ✅
+E — Express ✅
+R — React
+N — Node.js ✅
+See this post for MERN Part II: Building the frontend of a RESTful API with React
+
+Video code-alongs can be great. Until you don’t have whatever piece of technology they have and can’t get for whatever reason. Or you have to download exercise files that you can’t send to your personal computer because of work security blocks. Or you just need that one specific part and you don’t want to sift through all the clips to get to it. You get the point.
+
+So this adapted play by play of Henri’s tutorial (with permission*) is for my future self and, since you’re here, for you too. Welcome.
+
+Experience level: Beginner level JavaScript, comfortable in the terminal, and curiosity for what a MERN app is.
+
+Technology you’ll need before you start:
+
+MongoDB — NoSQL database
+Node.js (I was using version 12.13.0)
+Postman which “is a popular API client that makes it easy for developers to create, share, test and document APIs” (via) and fun! (I said it)
+NPM (node package manager)
+VSCode currently my preferred IDE
+Frameworks/Libraries/Dependencies we will be working with along the way (nothing you need to do now):
+
+Express — “is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications” (via)
+Mongoose — “is a MongoDB object modeling tool designed to work in an asynchronous environment” (via)
+Babel — JavaScript compiler
+Body-parser — Node.js body parsing middleware **** Please note body-parser is deprecated. I will update the article as soon as possible but reference this stack overflow answer here.****
+Nodemon — “Simple monitor script for use during development of a node.js app” Essentially when you hit “save” it automatically restarts your server
+Alright! Let’s start the project!
+
+What do you want to build?
+
+For me, I want to make an app that tracks my anti-racism work. I’m going to start out with one thing to track for now, which is the donations that I make. I want to know the organization they’re to, how much I give to them, the date I made the donation and any optional comments I feel may be relevant.
+
+Feel free to make something similar or get creative
+
+Head on over to your favorite terminal and make a new folder:
+
+~$ mkdir antiracism_mern
+And head into that folder:
+
+~$ cd antiracism_mern
+Now initialize your project which will create a new package.json file:
+
+antiracism_mern$ npm init
+It’s going to ask you a series of questions. You can be a good citizen and answer all of these or you can be lazy like me and hit enter through all of them. You can always go back and edit them later through the package.json file. 🙃
+
+
+Install express:
+
+antiracism_mern$ npm i express
+Install MongoDB and Mongoose:
+
+antiracism_mern$ npm i mongodb mongoose
+Save Babel dev dependencies:
+
+antiracism_mern$ npm i --save-dev babel-cli babel-preset-env babel-preset-stage-0
+Install body-parser json and nodemon:
+
+**** Please note body-parser is deprecated. I will update the article as soon as possible but reference this stack overflow answer here.****
+
+antiracism_mern$ npm i body-parser nodemon
+Now open in VSCode:
+
+antiracism_mern$ code .
+Head on over to your package.json file (⌘P) and change the “scripts” object. This will make sure our server restarts and make sure that babel transpiler executes:
+
+"scripts": {
+"start": "nodemon ./index.js --exec babel-node -e js"
+},
+Your package.json file should look like this:
+
+
+package.json with scripts object update
+Head back to your terminal and create a new file:
+
+antiracism_mern$ touch index.js
+In VSCode navigate to that new index.js file to set up the initial server, insert:
+
+import express from 'express';
+const app = express();
+const PORT = 4000;
+app.get('/', (req, res) =>
+  res.send(`Node and express server running on port ${PORT}`)
+)
+app.listen(PORT, () =>
+console.log(`Your server is running on port ${PORT}`))
+Head back to your terminal and create a new file:
+
+antiracism_mern$ touch .babelrc
+Babel is transpiling and so we need to help it do it’s thing. Go into that .babelrc in your VSCode and insert:
+
+{
+  "presets": ["env", "stage-0"]
+}
+Friendly reminder to save that file. :)
+
+Back to terminal, let’s fire it up!
+
+antiracism_mern$ npm start
+Hopefully you’ll see this in your terminal, you know it’s running:
+
+
+Server is running message in terminal
+Now open up chrome, navigate to http://localhost:4000/ and you should see this fancy message:
+
+
+localhost message
+Wahoo!!
+
+Now let’s build the folder structure for our project. This is what it should look like:
+
+
+src folder view
+You can do this is VSCode but I like to do it in terminal. It’s a bit tedious but good exercise.
+
+First start by making your src folder:
+
+antiracism_mern$ mkdir src
+Now move into that folder:
+
+antiracism_mern$ cd src
+Now you’ll make three folders:
+
+src$ mkdir controllers models routes
+Now go into controllers:
+
+src$ cd controllers
+And create a new file:
+
+controllers$ touch antiracismController.js
+Go back to src
+
+controllers$ cd ..
+Now go into models:
+
+src$ cd models
+And create a new file:
+
+models$ touch antiracismModel.js
+Go back to src
+
+models$ cd ..
+Go into routes
+
+src$ cd routes
+And make a file
+
+routes$ touch antiracismRoutes.js
+
+Photo by Jason Leung on Unsplash
+Celebrate! You did it. Phew.
+
+Before we build our endpoints, let’s checkout Postman and see if it’s picking up that only get call we’ve built. Set it as a GET call, with the same url http://localhost:4000/ click Send and see the similar:
+
+
+If you need help setting up Postman here’s an article to check out, it’s a little heavy handed but will give you the overall idea.
+
+Let’s build our first route in the antiracismRoutes.js file. If you’re not already familiar with CRUD apps — have a read here and that’s what we’re going to be setting up.
+
+Create — we’ll use a POST request, adding a new object, or in this case, donation
+Read — GET, being able to read either all of the donations or a specific one for example by a donation id
+Update — PUT, being able to edit data, so if I made a mistake on the amount I could be able to get the donation id and fix it
+Delete — DELETE, you are able to you know, delete it, erase it, destroy it, kaboom.
+In your antiracismRoutes.js file enter the following:
+
+const routes = (app) => {
+  //create route for donations
+  app.route('/donations')
+    //create get request
+    .get((req, res) =>
+    res.send('GET request successful!'))
+    //create post request
+    .post((req, res) =>
+    res.set('POST request successful!'));
+  // create a new route so you can get these donation entries by their ID's
+  app.route('/donations/:donationID')
+    //create put request
+    .put((req, res) =>
+    res.send('PUT request successful!'))
+    //create delete request
+    .delete((req, res) =>
+    res.send('DELETE request successful'))
+}
+// export it!
+export default routes;
+Head back to index.js import the file by at the top including:
+
+import routes from './src/routes/antiracismRoutes';
+And also enter:
+
+routes(app);
+Now head to postman — and let’s see these calls in action!
+
+Make sure it’s on a GET request and enter the url http://localhost:4000/donations/
+
+
+GET request in Postman
+Let’s do the same for POST, same url:
+
+
+POST request in Postman
+And PUT, but this time you want to enter a “fake” donation id in the url, you can put anything, http://localhost:4000/donations/84938:
+
+
+PUT request in Postman
+Last but not least, keep the url path but change the request to DELETE:
+
+
+DELETE request in Postman
+Let’s do some database setup. Head back into your index.js file and import mongoose and bodyParser:
+
+**** Please note body-parser is deprecated. I will update the article as soon as possible but reference this stack overflow answer here.****
+
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+Now enter in code to connect the mongoose to the API:
+
+**** Please note body-parser is deprecated. I will update the article as soon as possible but reference this stack overflow answer here.****
+
+// mongoose connection
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/antiracismdb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+//bodyparser setup
+app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.json());
+Now let’s set up our schema in the antiracismModel.js file. We’re going to add the type of data we’re wanting to collect. I want to know the organizations I’m donating to (organizationName), how much I’m giving (dollarAmount)and if you see I have an “optional” comments section in case I felt I needed to make a note as to why I donated, lastly I have created_date that the user (me) won’t manually be entering, it will just look at the date it was created and enter it as a field on it’s own. You can read in Mongoose docs about different data types.
+
+import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
+export const DonationSchema = new Schema({
+  organizationName: {
+    type: String,
+    required: "Enter organization name"
+  },
+  dollarAmount: {
+    type: Number,
+    required: "Enter amount donated"
+  },
+  comment: {
+    type: String
+  },
+  created_date: {
+    type: Date,
+    default: Date.now
+  }
+})
+Let’s now create a Postman endpoint for POST where we want to add a new donation function (addNewDonation). Head to your antiracismController.js:
+
+import mongoose from 'mongoose';
+import { DonationSchema } from '../models/antiracismModel'
+const Donation = mongoose.model('Donations', DonationSchema);
+export const addNewDonation = (req,res) => {
+  let newDonation = new Donation(req.body);
+  newDonation.save((err, donation) => {
+    if (err) {
+      res.send(err)
+    }
+    res.json(donation)
+  })
+}
+Now head into your antiracismRoutes, import the antiracismController.js file:
+
+import { addNewDonation } from '../controllers/antiracismController'
+And in the .post call you want to replace it with:
+
+.post(addNewDonation)
+Head into Postman and let’s test this!
+
+We’ll change it to a POST call. And the url is http://localhost:4000/donations/ .
+
+Make sure the Body you’ve selected “x-www-form-urlencoded”
+
+And start entering in the key value pairs and hit Send:
+
+
+Post request with data in Postman
+Look at that beauty of an object down there ^.
+
+Now let’s make an endpoint that will allow us to see all of the donation objections we’ve made. Let’s make the next function that we need getDonations. We want to use the Donation database and find the donatoins Head to the antiracismController.js file and add:
+
+export const getDonations = (req,res) => {
+  Donation.find({}, (err, donation) => {
+    if (err) {
+      res.send(err)
+    }
+    res.json(donation)
+  })
+}
+Now head to antiracismRoutes and add the getDonations function to the import statement:
+
+import { addNewDonation, getDonations } from '../controllers/antiracismController'
+And replace the code in the .get() with the function:
+
+.get(getDonations)
+Let’s go to Postman and do a GET request and see it in action, http://localhost:4000/donations/
+
+
+Get request Postman
+Now. See those “_id” up there in the object? ^ We’re going to make some endpoints to find a donation by id.
+
+Head to your antriracismController.js and paste in this getDonationWithId:
+
+export const getDonationWithID = (req,res) => {
+  Donation.findById(req.params.donationID, (err, donation) => {
+    if (err) {
+      res.send(err)
+    }
+    res.json(donation)
+  })
+}
+Now head to your antiracismRoutes at the top you want to import getDonationWithId. It should look like this:
+
+import { addNewDonation, getDonations, getDonationWithID } from '../controllers/antiracismController'
+And under your line:
+
+app.route(‘/donations/:donationID’)
+You want to add this:
+
+.get(getDonationWithID)
+Head to your postman with the url: http://localhost:4000/donations/[donationID] specific to your object and it can look like this in Postman:
+
+
+Get request by ID in Postman
+Let’s move on to the PUT endpoint — which will allow us to edit/update a donation.
+
+Head to your antiracismController.js and add an updateDonation function:
+
+export const updateDonation = (req,res) => {
+  Donation.findOneAndUpdate({ _id: req.params.donationID }, req.body, { new: true, useFindAndModify: false }, (err, donation) => {
+    if (err) {
+      res.send(err)
+    }
+    res.json(donation)
+  })
+}
+Lets update the antiracismRoutes.js:
+
+import { addNewDonation, getDonations, getDonationWithID, updateDonation } from '../controllers/antiracismController'
+Under your line:
+
+app.route(‘/donations/:donationID’)
+You want to add this:
+
+.put(updateDonation)
+Head to Postman and change the request to a PUT and in the Body make a change to the field:
+
+
+Put request by ID in Postman
+Last but not least, DELETE!
+
+Head to your antiracismController.js and add in:
+
+export const deleteDonation = (req,res) => {
+  Donation.deleteOne({ _id: req.params.donationID }, (err, donation) => {
+    if (err) {
+      res.send(err)
+    }
+    res.json({message: "successfully deleted donation"})
+    })
+}
+Then to your antiracismRoutes.js file:
+
+import { addNewDonation, getDonations, getDonationWithID, updateDonation, deleteDonation } from '../controllers/antiracismController'
+Under your line:
+
+app.route(‘/donations/:donationID’)
+You want to add this:
+
+.delete(deleteDonation)
+Head to Postman with the url: http://localhost:4000/donations/[donationID] specific to your object and now make it a DELETE request click send, you should get this:
+
+
+Delete request by ID in Postman
+HOORAY! You did it.
+
+Here’s the github repo you’re welcome to compare files, fork, star, or what have you.
